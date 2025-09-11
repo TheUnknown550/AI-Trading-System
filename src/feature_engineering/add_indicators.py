@@ -11,12 +11,20 @@ from glob import glob
 
 # Add src to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from utils.paths import get_data_dir
 
 class FeatureEngineering:
-    def __init__(self, input_dir="../../data/raw", output_dir="../../data/features"):
+    def __init__(self, input_dir=None, output_dir=None):
         """Initialize feature engineering with input and output directories"""
-        self.input_dir = input_dir
-        self.output_dir = output_dir
+        if input_dir is None:
+            self.input_dir = get_data_dir("raw")  # MarketData
+        else:
+            self.input_dir = input_dir
+            
+        if output_dir is None:
+            self.output_dir = get_data_dir("features")  # MarketData_Features
+        else:
+            self.output_dir = output_dir
         
         # Create output directory
         os.makedirs(self.output_dir, exist_ok=True)

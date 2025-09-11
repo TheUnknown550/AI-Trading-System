@@ -5,9 +5,12 @@ Makes predictions using existing trained models
 
 import os
 import sys
+from pathlib import Path
 
 # Add src to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
+project_root = Path(__file__).parent.parent.resolve()
+src_path = project_root / "src"
+sys.path.insert(0, str(src_path))
 
 from prediction.prediction_system import StockPredictor, PredictionDisplay
 

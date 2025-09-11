@@ -14,12 +14,20 @@ import joblib
 
 # Add src to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from utils.paths import get_data_dir, get_models_dir
 
 class ModelTrainer:
-    def __init__(self, data_dir="../../data/enhanced", models_dir="../../models"):
+    def __init__(self, data_dir=None, models_dir=None):
         """Initialize model trainer"""
-        self.data_dir = data_dir
-        self.models_dir = models_dir
+        if data_dir is None:
+            self.data_dir = get_data_dir("enhanced")  # MarketData_Features_Enhanced
+        else:
+            self.data_dir = data_dir
+            
+        if models_dir is None:
+            self.models_dir = get_models_dir()  # models/
+        else:
+            self.models_dir = models_dir
         
         # Create models directory
         os.makedirs(self.models_dir, exist_ok=True)

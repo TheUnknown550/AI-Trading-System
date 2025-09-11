@@ -148,11 +148,26 @@ class NewsAnalyzer:
                 'news_count': 0
             }
 
+import sys
+import os
+
+# Add src to path for imports  
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from utils.paths import get_data_dir
+
 class NewsFeatureEnhancer:
-    def __init__(self, features_dir="../../data/features", output_dir="../../data/enhanced"):
+    def __init__(self, features_dir=None, output_dir=None):
         """Initialize news feature enhancer"""
-        self.features_dir = features_dir
-        self.output_dir = output_dir
+        if features_dir is None:
+            self.features_dir = get_data_dir("features")  # MarketData_Features
+        else:
+            self.features_dir = features_dir
+            
+        if output_dir is None:
+            self.output_dir = get_data_dir("enhanced")  # MarketData_Features_Enhanced
+        else:
+            self.output_dir = output_dir
+            
         self.analyzer = NewsAnalyzer()
         
         # Create output directory

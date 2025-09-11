@@ -10,11 +10,15 @@ import sys
 
 # Add src to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from utils.paths import get_data_dir
 
 class DataCollector:
-    def __init__(self, output_dir="../../data/raw"):
+    def __init__(self, output_dir=None):
         """Initialize the data collector with output directory"""
-        self.output_dir = output_dir
+        if output_dir is None:
+            self.output_dir = get_data_dir("raw")  # Uses MarketData directory
+        else:
+            self.output_dir = output_dir
         
         # Symbol definitions
         self.stocks = [

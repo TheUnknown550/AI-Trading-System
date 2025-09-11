@@ -60,12 +60,6 @@ python automation/daily_automation.py
 # Choose option 4: Get AI predictions
 ```
 
-## Documentation
-
-📖 **[Complete Project Flow Guide](PROJECT_FLOW.md)** - Detailed workflow, automation, and troubleshooting
-
-💼 **[Portfolio Management Flow](PORTFOLIO_FLOW.md)** - Step-by-step portfolio creation and trading lifecycle
-
 ## How It Works
 
 1. **Data Collection**: Downloads 5 years of historical market data

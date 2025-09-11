@@ -14,12 +14,20 @@ import numpy as np
 # Add src to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from news_analysis.news_analyzer import NewsAnalyzer
+from utils.paths import get_models_dir, get_data_dir, get_outputs_dir
 
 class StockPredictor:
-    def __init__(self, models_dir="../../models", data_dir="../../data/enhanced"):
+    def __init__(self, models_dir=None, data_dir=None):
         """Initialize the stock predictor"""
-        self.models_dir = models_dir
-        self.data_dir = data_dir
+        if models_dir is None:
+            self.models_dir = get_models_dir()  # models/
+        else:
+            self.models_dir = models_dir
+            
+        if data_dir is None:
+            self.data_dir = get_data_dir("enhanced")  # MarketData_Features_Enhanced
+        else:
+            self.data_dir = data_dir
         self.models = {}
         self.news_analyzer = NewsAnalyzer()
         self.load_models()
@@ -181,14 +189,17 @@ class PredictionDisplay:
                   f"{pred['up_probability']:<10.3f} {pred['down_probability']:<10.3f}")
     
     @staticmethod
-    def save_predictions_to_file(predictions, output_dir="../../outputs"):
+    def save_predictions_to_file(predictions, output_dir=None):
         """
         Save predictions to a CSV file
         
         Args:
             predictions (list): List of (asset, prediction) tuples
-            output_dir (str): Output directory
+            output_dir (str): Output directory (defaults to project outputs/)
         """
+        if output_dir is None:
+            output_dir = get_outputs_dir()
+            
         os.makedirs(output_dir, exist_ok=True)
         
         # Convert to DataFrame
