@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 AI Trading System - Enhanced 4-Hour Automation with Real-Time Updates
 ====================================================================
@@ -22,10 +23,19 @@ import yfinance as yf
 from datetime import datetime, timedelta
 from pathlib import Path
 
+# Fix Windows Unicode issues
+if os.name == 'nt':
+    os.system('chcp 65001 >nul')  # Set UTF-8 encoding for Windows
+
 def log_message(message):
-    """Simple logging without emoji"""
+    """Simple logging with emoji fallback for Windows"""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"[{timestamp}] {message}")
+    try:
+        print(f"[{timestamp}] {message}")
+    except UnicodeEncodeError:
+        # Fallback for Windows encoding issues
+        safe_message = message.encode('ascii', 'ignore').decode('ascii')
+        print(f"[{timestamp}] {safe_message}")
 
 def clear_screen():
     """Clear the terminal screen"""
@@ -43,7 +53,7 @@ def display_portfolio_status():
             portfolio = json.load(f)
         
         print("=" * 60)
-        print(f"📊 LIVE PORTFOLIO STATUS - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"LIVE PORTFOLIO STATUS - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("=" * 60)
         
         cash = portfolio.get('cash', 0)
@@ -54,7 +64,7 @@ def display_portfolio_status():
         position_summary = []
         
         if positions:
-            print("\n🏪 CURRENT HOLDINGS:")
+            print("\nCURRENT HOLDINGS:")
             print("-" * 60)
             
             for symbol, pos in positions.items():
@@ -74,7 +84,7 @@ def display_portfolio_status():
                     total_invested += invested
                     total_current_value += current_value
                     
-                    status = "🟢" if gain_loss > 0 else "🔴" if gain_loss < 0 else "🟡"
+                    status = "[+]" if gain_loss > 0 else "[-]" if gain_loss < 0 else "[=]"
                     
                     print(f"  {status} {symbol}: {shares:.2f} shares @ ${current_price:.2f}")
                     print(f"      Growth: ${gain_loss:+.2f} ({gain_loss_pct:+.2f}%) | Value: ${current_value:,.2f}")
@@ -90,7 +100,7 @@ def display_portfolio_status():
                     invested = pos['shares'] * pos['avg_price']
                     total_invested += invested
                     total_current_value += invested
-                    print(f"  🟡 {symbol}: {pos['shares']:.2f} shares @ ${pos['avg_price']:.2f} (stored)")
+                    print(f"  [?] {symbol}: {pos['shares']:.2f} shares @ ${pos['avg_price']:.2f} (stored)")
         
         # Portfolio summary
         total_portfolio = cash + total_current_value
@@ -98,30 +108,30 @@ def display_portfolio_status():
         total_growth = total_portfolio - starting_value
         total_growth_pct = (total_growth / starting_value) * 100 if starting_value > 0 else 0
         
-        print(f"\n💎 PORTFOLIO SUMMARY:")
+        print(f"\nPORTFOLIO SUMMARY:")
         print("-" * 60)
-        print(f"  💵 Cash: ${cash:,.2f}")
-        print(f"  📈 Stock Value: ${total_current_value:,.2f}")
-        print(f"  🏆 Total Portfolio: ${total_portfolio:,.2f}")
-        print(f"  📊 Total Growth: ${total_growth:+,.2f} ({total_growth_pct:+.2f}%)")
+        print(f"  Cash: ${cash:,.2f}")
+        print(f"  Stock Value: ${total_current_value:,.2f}")
+        print(f"  Total Portfolio: ${total_portfolio:,.2f}")
+        print(f"  Total Growth: ${total_growth:+,.2f} ({total_growth_pct:+.2f}%)")
         
         if total_growth > 0:
-            status_msg = "🚀 GAINING"
+            status_msg = "GAINING"
         elif total_growth < 0:
-            status_msg = "📉 LOSING"
+            status_msg = "LOSING"
         else:
-            status_msg = "🟡 FLAT"
-        print(f"  🎯 Status: {status_msg}")
+            status_msg = "FLAT"
+        print(f"  Status: {status_msg}")
         
         # Show best performer
         if position_summary:
             best = max(position_summary, key=lambda x: x['gain_loss_pct'])
-            print(f"  🏆 Best: {best['symbol']} ({best['gain_loss_pct']:+.2f}%)")
+            print(f"  Best: {best['symbol']} ({best['gain_loss_pct']:+.2f}%)")
         
         # Recent trades
         if portfolio.get('trade_history'):
             recent_trades = portfolio['trade_history'][-3:]
-            print(f"\n📝 RECENT ACTIVITY:")
+            print(f"\nRECENT ACTIVITY:")
             print("-" * 60)
             for trade in recent_trades:
                 timestamp = trade.get('timestamp', '')[:16].replace('T', ' ')
@@ -129,8 +139,8 @@ def display_portfolio_status():
                 symbol = trade.get('symbol', '')
                 price = trade.get('price', 0)
                 shares = trade.get('shares', 0)
-                action_emoji = "🟢" if action == "BUY" else "🔴"
-                print(f"  {action_emoji} {timestamp} - {action} {shares:.2f} {symbol} @ ${price:.2f}")
+                action_mark = "[BUY]" if action == "BUY" else "[SELL]"
+                print(f"  {action_mark} {timestamp} - {action} {shares:.2f} {symbol} @ ${price:.2f}")
         
         print("=" * 60)
         
@@ -145,9 +155,9 @@ def show_next_run_countdown(next_run_time):
         hours = int(time_diff.total_seconds() // 3600)
         minutes = int((time_diff.total_seconds() % 3600) // 60)
         seconds = int(time_diff.total_seconds() % 60)
-        print(f"\n⏰ Next automation run in: {hours:02d}:{minutes:02d}:{seconds:02d}")
+        print(f"\nNext automation run in: {hours:02d}:{minutes:02d}:{seconds:02d}")
     else:
-        print(f"\n🔥 AUTOMATION RUNNING NOW...")
+        print(f"\nAUTOMATION RUNNING NOW...")
 
 def run_paper_trading():
     """Run paper trading directly"""
@@ -261,15 +271,15 @@ def run_4_hour_automation_with_display():
                     
                     # Clear screen and show updated portfolio every 30 seconds
                     clear_screen()
-                    print(f"🤖 AI TRADING AUTOMATION - CYCLE #{run_count}")
+                    print(f"AI TRADING AUTOMATION - CYCLE #{run_count}")
                     display_portfolio_status()
                     show_next_run_countdown(next_run)
                     
                     # Show monitoring activity
                     elapsed = datetime.now() - start_wait
                     progress = (elapsed.total_seconds() / 14400) * 100
-                    print(f"\n📊 Cycle Progress: {progress:.1f}% | Update #{update_count}")
-                    print("💡 Portfolio updates every 30 seconds | Press Ctrl+C to stop")
+                    print(f"\nCycle Progress: {progress:.1f}% | Update #{update_count}")
+                    print("Portfolio updates every 30 seconds | Press Ctrl+C to stop")
                     
                 except KeyboardInterrupt:
                     raise
@@ -284,7 +294,7 @@ def run_4_hour_automation_with_display():
 
 def main():
     """Enhanced main function with real-time portfolio display"""
-    print("🤖 AI Trading System - Enhanced 4-Hour Automation")
+    print("AI Trading System - Enhanced 4-Hour Automation")
     print("=" * 60)
     print("1. Start 4-hour automation with REAL-TIME DISPLAY (recommended)")
     print("2. Run one trading cycle only")  
@@ -295,9 +305,9 @@ def main():
     choice = input("\nChoose option (1-5): ").strip()
     
     if choice == "1":
-        print("\n🚀 Starting enhanced automation with real-time portfolio updates...")
-        print("💡 Your portfolio will update every 30 seconds")
-        print("📊 You'll see live prices and growth in real-time")
+        print("\nStarting enhanced automation with real-time portfolio updates...")
+        print("Your portfolio will update every 30 seconds")
+        print("You'll see live prices and growth in real-time")
         input("Press Enter to start...")
         run_4_hour_automation_with_display()
         
