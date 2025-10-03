@@ -1,11 +1,11 @@
 # Python Dependencies for AI Trading System
 
-# Core data manipulation and analysis
-pandas>=1.3.0
-numpy>=1.21.0
+# Core data manipulation and analysis (FIXED VERSIONS for compatibility)
+numpy==1.23.5
+pandas==1.5.3
 
 # Financial data collection
-yfinance>=0.1.87
+yfinance>=0.2.18
 
 # Technical analysis indicators
 ta>=0.10.2
